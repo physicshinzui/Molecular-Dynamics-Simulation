@@ -1,15 +1,12 @@
-# Molecular Dynamics Software based on Pure Functions
+# Molecular Dynamics Software based on Pure Functions in Fortran
 Author: Shinji Iida
 
 ## Implimentation
-* system: 
-    - FCC lattice, 2d and 1d simple lattice
+* System: 
+    - Face-Centered Cubic lattice, 2d and 1d simple lattice
 
 * Potential:
     - Lenard Jones
-
-* Long-range interation
-    -
 
 * Periodic boundary
 
