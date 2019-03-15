@@ -1,10 +1,10 @@
-# Enhanced-Sampling Molecular Dynamics Software based on Pure Functions in Fortran
+# Molecular Dynamics Software Based on Pure Functions in Fortran
 Author: Shinji Iida
 
 This MD software aims to simulate simple physical systems, such as lattice models.
 1-d, 2-d and 3-d system can be handled, enabling testing very simple system's behaviour.
 
-Most functions in this software are made to pure and thus adding new functions would be easy.
+Most functions in this software are made to pure except for IO subroutines and randum number generator.
 
 ## Implimentation
 * System:
@@ -15,11 +15,12 @@ Most functions in this software are made to pure and thus adding new functions w
 
 * Periodic boundary
 
-* Integrator:
-    - Velocity Verlet
-
-* Thermostat:
-    - Velocity rescaling with heating setting
+* NVE
+    * Integrator:
+        - Velocity Verlet
+* NVT
+    * Thermostat and Integrator:
+        - Velocity rescaling with heating setting; Velocity Verlet
 
 Following functionalities will be implemented:
   * Usability of PDB file as an input of a simulated system
