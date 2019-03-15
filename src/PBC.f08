@@ -1,48 +1,56 @@
 module PBC
+  use systemVariables
   implicit none
 contains
+
 !---this is currently specialised only for FCC lattice
-!    what I want to do are
-!        (1) calculate center of geormetry (cog) of a system
-!        (2) calculate center of geormetry (cog) of a system
-!    (This would be a code by python)
-    function periodic(coords, cell, centreOfGeometry) result(coordsPbc)
-      real(kind = 8), intent(in) :: coords(:,:), cell(:), centreOfGeometry(:)
-      real(kind = 8), allocatable :: coordsPbc(:,:), halfCell(:)
+    function periodic(sys, centerSys) result(pbcCorrectedSys)
+      type(system)  , intent(in) :: sys
+      real(kind = 8), intent(in) :: centerSys(:)
+      type(system) :: pbcCorrectedSys
+      real(kind = 8), allocatable :: halfCell(:), centerOfcell(:)
       integer :: iatom, idim
 
-      coordsPbc = coords
-      coordsPbc(:,:) = 0.0d0
-      halfCell = cell * 0.5d0
+      !---Make pbcCorrectedSys remember variables of sys which are not updated here.
+      pbcCorrectedSys = sys
 
-      do idim = 1, size(coords, 2)
-        do iatom = 1, size(coords, 1)
+      pbcCorrectedSys%positions(:,:) = 0.0d0
+      halfCell     = sys%cell * 0.5d0
+      !centerOfcell =
 
-          if (coords(iatom, idim) < 0.0d0 ) then
-            coordsPbc(iatom, idim) = coords(iatom, idim) + cell(idim)
+      do idim = 1, size(sys%positions, 2)
+        do iatom = 1, size(sys%positions, 1)
 
-          elseif (coords(iatom, idim) > cell(idim)) then
-            coordsPbc(iatom, idim) = coords(iatom, idim) - cell(idim)
+          if (sys%positions(iatom, idim) < centerSys(idim) - halfCell(idim) ) then
+!          if (sys%positions(iatom, idim) < 0.0d0 ) then
+            pbcCorrectedSys%positions(iatom, idim) = sys%positions(iatom, idim) + sys%cell(idim)
+            !print*, "1"
+
+!          elseif (sys%positions(iatom, idim) > sys%cell(idim)) then
+          elseif (sys%positions(iatom, idim) > centerSys(idim) + halfCell(idim)  ) then
+            pbcCorrectedSys%positions(iatom, idim) = sys%positions(iatom, idim) - sys%cell(idim)
+            !print*, "2"
 
           else
-            coordsPbc(iatom, idim) = coords(iatom, idim)
+            pbcCorrectedSys%positions(iatom, idim) = sys%positions(iatom, idim)
+            !print*, "3"
 
           endif
 
 !---I wanna generalise this function in future
-!          if (coords(iatom, idim) > centreOfGeometry(idim) + halfCell(idim) ) then
-!            coordsPbc(iatom, idim) = coords(iatom, idim) - cell(idim)
+!          if (coords(iatom, idim) > centerSys(idim) + halfCell(idim) ) then
+!            pbcCorrectedSys%positions(iatom, idim) = sys%positions(iatom, idim) - sys%cell(idim)
 !
-!          elseif (coords(iatom, idim) < - centreOfGeometry(idim) + halfCell(idim)) then
-!            coordsPbc(iatom, idim) = coords(iatom, idim) + cell(idim)
+!          elseif (coords(iatom, idim) < centerSys(idim) - halfCell(idim)) then
+!            pbcCorrectedSys%positions(iatom, idim) = sys%positions(iatom, idim) + sys%cell(idim)
 !
 !          else
-!            coordsPbc(iatom, idim) = coords(iatom, idim)
-!
+!            pbcCorrectedSys%positions(iatom, idim) = sys%positions(iatom, idim)
+
 !          endif
 
         enddo
       enddo
     end function periodic
 
-end module 
+end module

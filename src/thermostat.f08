@@ -1,39 +1,33 @@
 module Thermostats
-  use Variables
+  use systemVariables
   implicit none
 
 contains
 
-  !pure function thermostat(velocities, initialT, aimedT, heatingSteps, istep) result(modifiedVelocities)
-   function thermostat(sys, initialT, aimedT, heatingSteps, istep) result(modifiedSys)
+   pure function thermostat(sys, initialT, aimedT, heatingSteps, istep) result(updatedSys)
      !--this is the interface throught which we can access various thermostats
-    type(system), intent(in)   :: sys
-    real(kind = 8), intent(in) :: initialT, aimedT !velocities(:,:)
-    integer, intent(in) :: heatingSteps, istep
-    type(system) :: modifiedSys
-    !real(kind = 8), allocatable :: modifiedVelocities(:,:)
-    real(kind = 8) :: deltaT
+     type(system)  , intent(in) :: sys
+     real(kind = 8), intent(in) :: initialT, aimedT
+     integer       , intent(in) :: heatingSteps, istep
+     type(system)               :: updatedSys
+     real(kind = 8)             :: deltaT
 
-    deltaT = (aimedT-initialT)/heatingSteps
+     !-- Make updateSys remember variables of sys which will not be updated here.
+     updatedSys = sys
 
-    if (istep >= 1 .and. istep <= heatingSteps ) then
-      modifiedSys%velocities = scaleVelocities(sys%velocities, sys%masses, initialT + deltaT*istep )
+     !-- At each time step, temperature increased according to deltaT
+     deltaT = (aimedT-initialT)/heatingSteps
 
-    elseif(istep > heatingSteps) then
-      modifiedSys%velocities = scaleVelocities(sys%velocities, sys%masses, aimedT)
+     if (istep >= 1 .and. istep <= heatingSteps ) then
+       updatedSys%velocities = scaleVelocities(sys%velocities, sys%masses, initialT + deltaT*istep )
 
-    else
-      error stop "Thermostat Error: Negative/zero loop numbers are obtained, which cannot be handled."
+     elseif(istep > heatingSteps) then
+       updatedSys%velocities = scaleVelocities(sys%velocities, sys%masses, aimedT)
 
-    endif
+     else
+       error stop "Thermostat Error: Negative/zero loop numbers are obtained, which cannot be handled."
 
-    !---this is so stupid expressions. I do not want to do them.
-    modifiedSys%positions = sys%positions
-    modifiedSys%masses = sys%masses
-    modifiedSys%forces = sys%forces
-    modifiedSys%potential = sys%potential
-    modifiedSys%kinetic = sys%kinetic
-
+     endif
 
   end function
 
@@ -82,9 +76,7 @@ contains
     nAtoms = size(velocities, 1)
     nDimensions = size(velocities, 2)
     !allocate(mass(nAtoms), ones(nAtoms))
-    !mass(:) = 1.0d0 !???Hard coded. this will be set to each atom in future.
 
-!    instantaneousTt = squreSum(velocities, mass) / (nDimensions*(nAtoms - 1))
     instantaneousTt = Tt(velocities, masses)
 
       !--Negative tempreature is not allowed.

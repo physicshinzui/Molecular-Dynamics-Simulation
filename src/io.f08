@@ -4,10 +4,10 @@ module IO
 
 contains
 
-  subroutine energyIO(potential, kinetic, Tt)
-    real(kind = 8), intent(in) :: potential, kinetic, Tt
+  subroutine energyIO(potential, kinetic, Tt, maxForce)
+    real(kind = 8), intent(in) :: potential, kinetic, Tt, maxForce
     open(unit=123, file="energy.dat", action="write")
-    write(123,'(4f12.3)') potential, kinetic, potential + kinetic, Tt
+    write(123,'(5f12.3)') potential, kinetic, potential + kinetic, Tt, maxForce
     !close(unit=11)
   end subroutine energyIO
 
