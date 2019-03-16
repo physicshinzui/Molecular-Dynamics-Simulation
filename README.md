@@ -6,6 +6,9 @@ This MD software aims to simulate simple physical systems, such as lattice model
 
 Most functions in this software are made to pure except for IO subroutines and randum number generator.
 
+
+![example](https://github.com/physicshinzui/Molecular-Dynamics-Simulation/blob/master/fig/Screenshot%202019-03-16%20at%2000.57.05.png)
+
 ## Implimentation
 * System:
     - Face-Centered Cubic lattice
